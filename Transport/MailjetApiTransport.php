@@ -85,7 +85,12 @@ class MailjetApiTransport extends AbstractApiTransport
             throw new HttpTransportException(sprintf('Unable to send an email: "%s" malformed api response.', $response->getContent(false)), $response);
         }
 
-        $sentMessage->setMessageId($response->getHeaders(false)['x-mj-request-guid'][0]);
+	    if (is_array($result['Messages'][0]['To'][0]) && array_key_exists('MessageUUID',$result['Messages'][0]['To'][0])) {
+		    $sentMessage->setMessageId($result['Messages'][0]['To'][0]['MessageUUID']);
+	    }
+	    else {
+		    $sentMessage->setMessageId($response->getHeaders(false)['x-mj-request-guid'][0]);
+	    }
 
         return $response;
     }
